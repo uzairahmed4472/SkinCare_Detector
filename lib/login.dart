@@ -225,11 +225,16 @@ print(pass);
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                // ignore: deprecated_member_use
                                 state is!loadingLoginState
                                     ?
-                                FlatButton(
-                                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 35),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 35),
+                                    backgroundColor: Color(0xff07446C),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                    ),
+                                  ),
                                   onPressed: () async {
                                     //  SubmitLoginForm();
                                     if (_formKey.currentState?.validate()==true) {
@@ -245,9 +250,6 @@ print(pass);
                                       }
                                    
                                   },
-                                  shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(30.0),
-                                  ),
                                   child: Text(
                                     "Sign In",
                                     style: GoogleFonts.montserrat(
@@ -256,7 +258,6 @@ print(pass);
                                         letterSpacing: 0.168,
                                         fontWeight: FontWeight.w500),
                                   ),
-                                  color: Color(0xff07446C),
                                 )
                                     : Center(
                                   child: CircularProgressIndicator(
