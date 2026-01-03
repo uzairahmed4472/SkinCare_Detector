@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_application_1/advanced_test/1-affected_area.dart';
+import 'package:flutter_application_1/diseases/scc.dart';
 import 'package:flutter_application_1/home.dart';
 import 'package:flutter_application_1/skin_test/1-test_home_page.dart';
 import 'package:flutter_application_1/skin_test/3-display_image.dart';
@@ -12,20 +13,19 @@ import 'dart:typed_data';
 import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/services.dart' show rootBundle;
-
+import 'package:flutter_application_1/services/firestore_service.dart';
 
 enum imgSrc { camera, gallery }
 
 class Load_image extends StatefulWidget {
-  const Load_image({ Key? key }) : super(key: key);
+  const Load_image({Key? key}) : super(key: key);
 
   @override
   State<Load_image> createState() => _Load_imageState();
 }
 
-
 class _Load_imageState extends State<Load_image> {
-   late File _image;
+  late File _image;
   bool _loading = true;
   final picker = ImagePicker();
   late bool _modelLoading;
@@ -33,20 +33,27 @@ class _Load_imageState extends State<Load_image> {
   late List _output;
   // int not_image_ok = 0;
 
-
   String base64string = 'Not Selected';
   String augustus_output = '';
-  String augustus_confidence = '';  
+  String augustus_confidence = '';
   String augustus_error = '';
   var loaded_image = 0;
   int temp = 0;
   late String _infotxt;
-  var quick_advanced ;
+  var quick_advanced;
 
-  var name ;
-  var email ;  
-  var phone ;
+  var name;
+  var email;
+  var phone;
   var password;
+
+  List dangerous_lessions = [
+    'Melanoma',
+    'Basal Cell Carcinoma',
+    'Squamous Cell Carcinoma'
+  ];
+
+  final FirestoreService _firestoreService = FirestoreService();
 
   Future<void> getText(String path) async {
     final _loadedData = await rootBundle.loadString(path);
@@ -54,16 +61,33 @@ class _Load_imageState extends State<Load_image> {
       _infotxt = _loadedData;
     });
   }
-  
-  
-  
-  
+
   deletePref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.clear();
-    });
-    print('Data is cleared');
+    
+    // Save the current user's email before clearing
+    String? currentEmail = prefs.getString('email');
+    
+    // Clear only the current test data, not the history
+    await prefs.remove('base64string');
+    await prefs.remove('label_output');
+    await prefs.remove('confidence_output');
+    await prefs.remove('infotxt');
+    await prefs.remove('affected_area');
+    await prefs.remove('affected_area_size');
+    await prefs.remove('duration_injury');
+    await prefs.remove('itch');
+    await prefs.remove('fever');
+    await prefs.remove('affected_area_shape');
+    await prefs.remove('affected_area_color');
+    await prefs.remove('tissue_damage');
+    
+    // Keep the user's email for history tracking
+    if (currentEmail != null) {
+      await prefs.setString('user_test_email', currentEmail);
+    }
+    
+    print('Current test data cleared, history preserved');
   }
 
   getPref() async {
@@ -77,7 +101,6 @@ class _Load_imageState extends State<Load_image> {
       quick_advanced = prefs.getString('quick_advanced');
 
       print(password);
-
     });
     print('get Pref of quick_advanced has been done');
     print('---------------------------------------------------');
@@ -86,36 +109,68 @@ class _Load_imageState extends State<Load_image> {
 
   savePref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Uint8List imagebytes = await _image.readAsBytes(); //convert to bytes
-    base64string = base64.encode(imagebytes); //convert bytes to base64 string                
-    setState(() {
-      // prefs.setString('skin_or_not', 'var_skin_or_not');  
-      prefs.setString('base64string', base64string);   
-      prefs.setString('label_output', augustus_output);  
-      prefs.setString('confidence_output', augustus_confidence);  
-      prefs.setString('infotxt', _infotxt);
-      prefs.setString('name', name);
-      prefs.setString('email', email);
-      prefs.setString('phone', phone);
-      prefs.setString('password', password);
-      prefs.setString('quick_advanced', quick_advanced);
-      // prefs.setString('affected_area', '');
+    Uint8List imagebytes = await _image.readAsBytes();
+    base64string = base64.encode(imagebytes);
+    print('DEBUG: base64string saved: ' + (base64string.length > 30 ? base64string.substring(0, 30) + '...' : base64string));
 
-    
-    
-    });
-    
-    print('save prefs done successfllly');
-  } 
+    // Get the current user's email
+    String? userEmail = prefs.getString('email');
+    if (userEmail == null || userEmail.isEmpty) {
+      print('Error: No user email found when saving test result');
+      return;
+    }
 
+    print('Saving test result for user: $userEmail');
 
+    // Create new test result
+    Map<String, dynamic> newResult = {
+      'label': augustus_output,
+      'confidence': augustus_confidence,
+      'imageBase64': base64string,
+      'infoText': _infotxt,
+      'name': name ?? '',
+      'email': userEmail,
+      'phone': phone ?? '',
+      'affectedArea': prefs.getString('affected_area') ?? '',
+      'affectedAreaSize': prefs.getString('affected_area_size') ?? '',
+      'durationInjury': prefs.getString('duration_injury') ?? '',
+      'itch': prefs.getString('itch') ?? '',
+      'fever': prefs.getString('fever') ?? '',
+      'affectedAreaShape': prefs.getString('affected_area_shape') ?? '',
+      'affectedAreaColor': prefs.getString('affected_area_color') ?? '',
+      'tissueDamage': prefs.getString('tissue_damage') ?? '',
+      'timestamp': DateTime.now().toIso8601String(),
+      'testType': quick_advanced ?? 'quick',
+    };
+
+    try {
+      // Save to Firestore
+      await _firestoreService.saveTestResult(newResult);
+      print('Test result saved successfully to Firestore');
+
+      // Save current test data for immediate use
+      await prefs.setString('base64string', base64string);
+      await prefs.setString('label_output', augustus_output);
+      await prefs.setString('confidence_output', augustus_confidence);
+      await prefs.setString('infotxt', _infotxt);
+      await prefs.setString('name', name ?? '');
+      await prefs.setString('email', userEmail);
+      await prefs.setString('phone', phone ?? '');
+      await prefs.setString('password', password ?? '');
+      await prefs.setString('quick_advanced', quick_advanced ?? '');
+
+      print('Test result saved successfully for user: $userEmail');
+      print('Test type: ${quick_advanced ?? "quick"}');
+      print('Test label: $augustus_output');
+    } catch (e) {
+      print('Error saving test result: $e');
+    }
+  }
 
   Future loadModel() async {
     await Tflite.loadModel(
         model: "assets/model_unquant.tflite", labels: "assets/labels.txt");
   }
-  
-
 
   ///Tries to load image from either gallery or camera depening on [scr]. If successfull, calls classify function on image.
   Future getImagePrediction(imgSrc src) async {
@@ -130,16 +185,15 @@ class _Load_imageState extends State<Load_image> {
         _modelPredicting = true;
       }
     });
- 
+
     if (_image != null) {
-     try {
+      try {
         classifyImg(_image);
-     } catch (e) {
-      setState(() {
-        augustus_error = 'Error !please sir try another picture ';
-      });
-     }
-      
+      } catch (e) {
+        setState(() {
+          augustus_error = 'Error !please sir try another picture ';
+        });
+      }
     }
   }
 
@@ -167,27 +221,33 @@ class _Load_imageState extends State<Load_image> {
     setState(() {
       _output = output;
       _loading = false;
-      _modelPredicting = false;      
-        try {
-          augustus_output = '${_output[0]['label']}';
-        // augustus_confidence = '${(_output[0]['confidence']*100).toStringAsFixed(2)}';
-        augustus_confidence = '${(_output[0]['confidence']*100).round()}';
-        augustus_error = '';
+      _modelPredicting = false;
+      try {
+        String label = '${_output[0]['label']}';
+        if (label != 'Melanoma' &&
+            label != 'Basal Cell Carcinoma' &&
+            label != 'Squamous Cell Carcinoma') {
+          augustus_output = 'Unknown';
+          augustus_confidence = '';
+          augustus_error = 'Not Supported.';
+        } else {
+          augustus_output = label;
+          augustus_confidence = '${(_output[0]['confidence'] * 100).round()}';
+          augustus_error = '';
+        }
         loaded_image = 0;
         temp = 1;
-        } catch (e) {
-          augustus_output = '';
-          augustus_confidence = ''; 
+      } catch (e) {
+        augustus_output = '';
+        augustus_confidence = '';
         augustus_error = 'Error !please sir try another picture ';
         temp = 1;
         loaded_image = 1;
-        print(e.toString());          
-        }
+        print(e.toString());
+      }
     });
   }
 
-
-   
   //init state
   @override
   void initState() {
@@ -212,365 +272,408 @@ class _Load_imageState extends State<Load_image> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(
-        // title: Text('augustus'),
-        leading: IconButton(
-            onPressed: (){
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 16, 170, 226),
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color.fromARGB(255, 16, 170, 226),
+                  Color.fromARGB(255, 87, 179, 212),
+                ],
+              ),
+            ),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_outlined, color: Colors.white),
+            onPressed: () {
               Navigator.of(context).pop();
-              Navigator.push(context,MaterialPageRoute(builder: (context) => Test_Home_page()),);
-                             }, icon: Icon(Icons.arrow_back_outlined)
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Test_Home_page()),
+              );
+            },
+          ),
+          title: Text(
+            'Image selection',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
-        
-         actions: [
-           IconButton(onPressed: (){
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.home_sharp, color: Colors.white),
+              onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);           
-                }, icon: Icon(Icons.home_sharp)),
-            
-        ],
-        flexibleSpace: Expanded(
-          child: Container(
-            padding:EdgeInsets.only(top:35),
-            child: Text('Image selection',style: TextStyle(fontSize:20,color: Colors.white ,fontWeight:FontWeight.bold),),
-            alignment:Alignment.center,
-              decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: <Color>[Colors.black, Colors.blue ]),
-              ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Home()),
+                );
+              },
             ),
-        ),
-  ),
-
-
-      body: temp == 0 ? 
-      Container(
-
-              decoration : BoxDecoration(
-                     gradient: LinearGradient(
-                      //  colors: [Color.fromARGB(255, 255, 255, 255), Color.fromARGB(255, 174, 217, 255)],
-                      //  colors: [Color.fromARGB(255, 96, 165, 239), Color.fromARGB(255, 153, 204, 250)], // mahmoud
-                       colors: [Color.fromARGB(146, 147, 226, 255), Color.fromARGB(255, 227, 245, 255)],
-
-                       begin: Alignment.centerLeft,
-                       end: Alignment.centerRight,
-                     ),
-                ),
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              flex: 1,
-              child: 
-            Container(
-              margin: EdgeInsets.only(top: 18,left: 18,right: 18,bottom: 5),
-              width:double.infinity,
-              height:double.infinity,
-              child: Card(
-                shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-          side: BorderSide(
-              width: 3,
-              color: Colors.black
-          )),
-                     
-                child: InkWell(
-                   onTap: ()  {
-                    try {
-                       setState(() {
-                      getImagePrediction(imgSrc.gallery);
-                     });
-                     } catch (e) {
-                      Navigator.of(context).pop();              
-                      Navigator.push(context,MaterialPageRoute(builder: (context) => Display_image()),);
-                     }             
-                   },
-                    // Handle your callback.
-                 splashColor: Colors.blue,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Ink(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                       image: DecorationImage(
-                       image: AssetImage("assets/upload.png"),
-                        fit: BoxFit.cover,
-                         ),
-                        ),
-                        ),
-                        SizedBox(height: 5,),
-                        Text('Import Image' , style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
-                        SizedBox(height: 5,),
-                        Text('select a mole or skin lesion' , style: TextStyle(fontSize: 15,)),
-                        Text('photograph from your gallary' , style: TextStyle(fontSize: 15,))
-                      ],
-                    )
-                 ),
-              ),
-            ),
-            ),
-
-
-             Expanded(
-              flex: 1,
-              child: 
-            Container(
-              margin: EdgeInsets.only(top: 5,left: 18,right: 18,bottom: 18),
-              width:double.infinity,
-              height:double.infinity,
-              child: Card(
-                
-                  shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-          side: BorderSide(
-              width: 3,
-              color: Colors.black
-          )),
-                
-                child: InkWell(
-                   onTap: ()  {
-                     try {
-                       setState(() {
-                      getImagePrediction(imgSrc.camera);
-                     });
-                     } catch (e) {
-                      Navigator.of(context).pop();              
-                      Navigator.push(context,MaterialPageRoute(builder: (context) => Display_image()),);
-                     }
-
-                   },
-                    // Handle your callback.
-                 splashColor: Colors.blue,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Ink(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        // border: Border.all(width:3,color:Color.fromARGB(255, 2, 2, 2)),
-                       image: DecorationImage(
-                       image: AssetImage("assets/camera.png"),
-                        fit: BoxFit.cover,
-                         ),
-                        ),
-                        ),
-                        SizedBox(height: 5,),
-                        Text('Take a photo' , style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
-                        SizedBox(height: 5,),
-                        Text('Rapidly take a photo of the skin' , style: TextStyle(fontSize: 15,)),
-                        Text('region for analysis' , style: TextStyle(fontSize: 15,))
-                      ],
-                    )
-                 ),
-              ),
-            ),
-            ),
-
-
           ],
         ),
-      )
+        body: temp == 0
+            ? Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    //  colors: [Color.fromARGB(255, 255, 255, 255), Color.fromARGB(255, 174, 217, 255)],
+                    //  colors: [Color.fromARGB(255, 96, 165, 239), Color.fromARGB(255, 153, 204, 250)], // mahmoud
+                    colors: [
+                      Color.fromARGB(146, 147, 226, 255),
+                      Color.fromARGB(255, 227, 245, 255)
+                    ],
 
-        
-        /// form of diplaying images and results
-        :Container(
-          width:  double.infinity,
-          height: double.infinity,
-          decoration : BoxDecoration(
-                     gradient: LinearGradient(
-                      //  colors: [Color.fromARGB(255, 255, 255, 255), Color.fromARGB(255, 174, 217, 255)],
-                      //  colors: [Color.fromARGB(255, 96, 165, 239), Color.fromARGB(255, 153, 204, 250)], // mahmoud
-                       colors: [Color.fromARGB(146, 147, 226, 255), Color.fromARGB(255, 227, 245, 255)],
-
-                       begin: Alignment.centerLeft,
-                       end: Alignment.centerRight,
-                     ),
-                ),
-
-          child: Column(
-            children: [
-                  SizedBox(height: 20,),
-              loaded_image == 0 ? Container(
-                  decoration : BoxDecoration(
-                    border : Border.all(width:1,color:Color.fromRGBO(1, 5, 53, 1)),
-                  borderRadius : BorderRadius.circular(50),
-                ),
-                  margin:EdgeInsets.all(20),
-                  height :270,
-                  width :270,
-                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                    child: Image.file(
-                  _image,
-                  fit: BoxFit.fill,
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
-                  )
-                  )
-              : Container(),
-
-          Container(
-            child : Column(
-              children: [
-                 Text('$augustus_error')    ,
-                //  not_image_ok == 1 ? Text('Not a good image to use please select a another skin image') : Container(),
-               SizedBox(height: 10.0),
-                Container(
-                  alignment: Alignment.center,
-               height: 50.0,
-               width: 300,
-               margin: EdgeInsets.all(10),
-               child: ElevatedButton(
-                 onPressed: ()  async {
-                             await  getPref();
-                             deletePref();
-                              await savePref(); 
-                                
-                            if (augustus_output == 'Unknown' ) {
-                             
-                              AwesomeDialog(
-                                context: context,
-                                dialogType: DialogType.INFO,
-                                animType: AnimType.BOTTOMSLIDE,
-                                title: 'Image validation Error',
-                                desc: 'pls sir try to add another image or continue if you want',
-                                btnCancelOnPress: () async {
-                                  setState(()  {
-                                    temp = 0;
-                                     augustus_error = 'we don\'t think it\'s a skin image';
-                                  });
-                                },
-                                btnOkOnPress: ()  {
+                ),
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        margin: EdgeInsets.only(
+                            top: 18, left: 18, right: 18, bottom: 5),
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              side: BorderSide(width: 3, color: Colors.black)),
+                          child: InkWell(
+                              onTap: () {
+                                try {
                                   setState(() {
-                                     if (quick_advanced == 'advanced'){
-                                    Navigator.of(context).pop();              
-                                  Navigator.push(context,MaterialPageRoute(builder: (context) => Affected_area()),);
-                                  }
-                                  else{
-                                    
-                                    Navigator.of(context).pop();              
-                                  Navigator.push(context,MaterialPageRoute(builder: (context) => Display_image()),);
-                                  }
-                                    
-                                    
-                                  
+                                    getImagePrediction(imgSrc.gallery);
                                   });
-                                }, )..show();}
-
-                                else{
-                                  
-                                  print('---------------------------------');
-                                  print(quick_advanced);
-
- 
-                                  if (quick_advanced == 'advanced'){
-                                    Navigator.of(context).pop();              
-                                  Navigator.push(context,MaterialPageRoute(builder: (context) => Affected_area()),);
-                                  }
-                                  else{
-                                  deletePref();
-                                  await savePref();                                    
-                                    Navigator.of(context).pop();              
-                                  Navigator.push(context,MaterialPageRoute(builder: (context) => Display_image()),);
-                                  }
-                                  
-                                    
+                                } catch (e) {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Display_image()),
+                                  );
                                 }
-                  },
-                 style: ElevatedButton.styleFrom(
-                        primary:Color.fromARGB(255, 243, 33, 33),
-                        fixedSize: Size(350, 100),
+                              },
+                              // Handle your callback.
+                              splashColor: Colors.blue,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Ink(
+                                    height: 100,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage("assets/upload.png"),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text('Import Image',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold)),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text('select a mole or skin lesion',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      )),
+                                  Text('photograph from your gallary',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      ))
+                                ],
+                              )),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        margin: EdgeInsets.only(
+                            top: 5, left: 18, right: 18, bottom: 18),
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: Card(
                           shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(80.0)),
-                 padding: EdgeInsets.all(0.0),),
-                 child: Ink(
-                   decoration: BoxDecoration(
-                       gradient: LinearGradient(
-                       colors: [Color.fromARGB(255, 66, 120, 212), Color.fromARGB(255, 79, 151, 213)],
-                         begin: Alignment.centerLeft,
-                         end: Alignment.centerRight,
-                       ),
-                       borderRadius: BorderRadius.circular(30.0)),
-                   child: Container(
-                     constraints:
-                         BoxConstraints(maxWidth: 350.0, minHeight: 50.0),
-                     alignment: Alignment.center,
-                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                              borderRadius: BorderRadius.circular(20.0),
+                              side: BorderSide(width: 3, color: Colors.black)),
+                          child: InkWell(
+                              onTap: () {
+                                try {
+                                  setState(() {
+                                    getImagePrediction(imgSrc.camera);
+                                  });
+                                } catch (e) {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Display_image()),
+                                  );
+                                }
+                              },
+                              // Handle your callback.
+                              splashColor: Colors.blue,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Ink(
+                                    height: 100,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      // border: Border.all(width:3,color:Color.fromARGB(255, 2, 2, 2)),
+                                      image: DecorationImage(
+                                        image: AssetImage("assets/camera.png"),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text('Take a photo',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold)),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text('Rapidly take a photo of the skin',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      )),
+                                  Text('region for analysis',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      ))
+                                ],
+                              )),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+
+            /// form of diplaying images and results
+            : Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    //  colors: [Color.fromARGB(255, 255, 255, 255), Color.fromARGB(255, 174, 217, 255)],
+                    //  colors: [Color.fromARGB(255, 96, 165, 239), Color.fromARGB(255, 153, 204, 250)], // mahmoud
+                    colors: [
+                      Color.fromARGB(146, 147, 226, 255),
+                      Color.fromARGB(255, 227, 245, 255)
+                    ],
+
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+                child: Column(children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  loaded_image == 0
+                      ? Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 1, color: Color.fromRGBO(1, 5, 53, 1)),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          margin: EdgeInsets.all(20),
+                          height: 270,
+                          width: 270,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.file(
+                              _image,
+                              fit: BoxFit.fill,
+                            ),
+                          ))
+                      : Container(),
+                  Container(
+                    child: Column(
                       children: [
-                        Text(
-                       "Processed",
-                       textAlign: TextAlign.center,
-                       style: TextStyle(color: Colors.white, fontSize: 20),
-                     ),
+                        Text('$augustus_error'),
+                        //  not_image_ok == 1 ? Text('Not a good image to use please select a another skin image') : Container(),
+                        SizedBox(height: 10.0),
+                        Container(
+                          alignment: Alignment.center,
+                          height: 50.0,
+                          width: 300,
+                          margin: EdgeInsets.all(10),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (augustus_output == 'Unknown') {
+                                AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.INFO,
+                                  animType: AnimType.BOTTOMSLIDE,
+                                  title: 'Image validation Error',
+                                  desc:
+                                      'Please select an image of a skin condition',
+                                  btnCancelOnPress: () {
+                                    setState(() {
+                                      temp = 0;
+                                      augustus_error =
+                                          'Please select a valid skin condition image';
+                                    });
+                                  },
+                                  btnOkOnPress: () {
+                                    setState(() {
+                                      temp = 0;
+                                    });
+                                  },
+                                )..show();
+                                return;
+                              }
+
+                              await getPref();
+                              deletePref();
+                              await savePref();
+
+                              print('---------------------------------');
+                              print(quick_advanced);
+
+                              if (quick_advanced == 'advanced') {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Affected_area()),
+                                );
+                              } else {
+                                // Add check for base64string before navigating
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                String? b64 = prefs.getString('base64string');
+                                print('DEBUG: base64string before navigation: ' + (b64 != null && b64.length > 30 ? b64.substring(0, 30) + '...' : (b64 ?? 'null')));
+                                if (b64 == null || b64.isEmpty || b64 == 'Not Selected') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('No image data found. Please select an image first!')),
+                                  );
+                                  return;
+                                }
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Display_image()),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Color.fromARGB(255, 243, 33, 33),
+                              fixedSize: Size(350, 100),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(80.0)),
+                              padding: EdgeInsets.all(0.0),
+                            ),
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(255, 66, 120, 212),
+                                      Color.fromARGB(255, 79, 151, 213)
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30.0)),
+                              child: Container(
+                                  constraints: BoxConstraints(
+                                      maxWidth: 350.0, minHeight: 50.0),
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Processed",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 20),
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          alignment: Alignment.center,
+                          height: 50.0,
+                          width: 300,
+                          margin: EdgeInsets.all(10),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                temp = 0;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Color.fromARGB(255, 243, 33, 33),
+                              fixedSize: Size(350, 100),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(80.0)),
+                              padding: EdgeInsets.all(0.0),
+                            ),
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(255, 66, 120, 212),
+                                      Color.fromARGB(255, 79, 151, 213)
+                                    ],
+
+                                    //  colors: [Colors.green, Color.fromARGB(255, 36, 129, 8),],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30.0)),
+                              child: Container(
+                                  constraints: BoxConstraints(
+                                      maxWidth: 350.0, minHeight: 50.0),
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Back to take another photo",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 20),
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: 5,
+                        ),
                       ],
-                     )
-                   ),
-                 ),
-               ),
-             ),
-
-
-
-                Container(
-                  alignment: Alignment.center,
-               height: 50.0,
-               width: 300,
-               margin: EdgeInsets.all(10),
-               child: ElevatedButton(
-                 onPressed: () {
-                  setState(() {
-                    temp = 0;
-                  });
-                 },
-                 style: ElevatedButton.styleFrom(
-                        primary:Color.fromARGB(255, 243, 33, 33),
-                        fixedSize: Size(350, 100),
-                          shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(80.0)),
-                 padding: EdgeInsets.all(0.0),),
-                 child: Ink(
-                   decoration: BoxDecoration(
-                       gradient: LinearGradient(
-                       colors: [Color.fromARGB(255, 66, 120, 212), Color.fromARGB(255, 79, 151, 213)],
-
-                        //  colors: [Colors.green, Color.fromARGB(255, 36, 129, 8),],
-                         begin: Alignment.centerLeft,
-                         end: Alignment.centerRight,
-                       ),
-                       borderRadius: BorderRadius.circular(30.0)),
-                   child: Container(
-                     constraints:
-                         BoxConstraints(maxWidth: 350.0, minHeight: 50.0),
-                     alignment: Alignment.center,
-                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                       "Back to take another photo",
-                       textAlign: TextAlign.center,
-                       style: TextStyle(color: Colors.white, fontSize: 20),
-                     ),
-                      ],
-                     )
-                   ),
-                 ),
-               ),
-             ),
-
-             SizedBox(height: 5,),
-                             
-              ],
-            ),
-          ), 
-            ]),
-        )
-                
-    
-        );
+                    ),
+                  ),
+                ]),
+              ));
   }
 }

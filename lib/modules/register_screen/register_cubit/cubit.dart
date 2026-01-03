@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/modules/register_screen/register_cubit/state.dart';
@@ -13,41 +12,50 @@ class RegisterCubit extends Cubit<RegisterState>
 
   static RegisterCubit get(context) =>BlocProvider.of(context);
 
-  void userRegister({
-  required String name,
-  required String email,
-  required String password,
-  required String phone,
+  Future<void> userRegister({
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+  }) async {
+    try {
+      // First check if email exists
+      final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      if (methods.isNotEmpty) {
+        emit(errorCreateUserState());
+        throw Exception('Email already exists');
+      }
 
-  })
-{
-  print("creat users");
-  FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password
-  )
-  .then((value){
-    creteUser(
-        uid: value.user?.uid,
+      // Create user in Firebase Auth
+      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password
+      );
+
+      // Create user document in Firestore
+      await creteUser(
+        uid: userCredential.user?.uid,
         name: name,
         email: email,
         password: password,
         phone: phone,
-    );
-  }).catchError((onError){
-    print(onError.toString());
-    emit(errorCreateUserState());
-  });
-}
+      );
 
-  void creteUser({
-  required  String? uid,
-  required String name,
-  required String email,
-  required String password,
-  required String phone,
-  })
-  {
+      emit(successRegisterState());
+    } catch (e) {
+      print('Registration error: $e');
+      emit(errorCreateUserState());
+      throw e;
+    }
+  }
+
+  Future<void> creteUser({
+    required String? uid,
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+  }) async {
     UserModel model = UserModel(
       name: name,
       email: email,
@@ -55,21 +63,19 @@ class RegisterCubit extends Cubit<RegisterState>
       password: password,
       phone: phone,
     );
-    emit(loadingRegisterState()
-    );
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-         .set(model.toMap())
-       .then((value){
+    emit(loadingRegisterState());
 
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .set(model.toMap());
+      
       emit(successRegisterState());
-
-    }).catchError((onError)
-    {
+    } catch (e) {
       emit(errorRegisterState());
-    });
+      throw e;
+    }
   }
-
 }

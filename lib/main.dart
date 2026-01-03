@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/shared/bloc_observer/bloc_observer.dart';
 import 'package:flutter_application_1/splash_screen.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -12,18 +11,14 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget
-{
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Achelois',
-      debugShowCheckedModeBanner: false,      
+      title: 'Dermatology Assistant',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
       home: Splash2(),
     );
-
   }
-
 }
-

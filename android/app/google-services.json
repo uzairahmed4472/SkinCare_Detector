@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "235753731083",
-    "project_id": "skincaredetector",
-    "storage_bucket": "skincaredetector.firebasestorage.app"
+    "project_number": "470108508014",
+    "project_id": "skincaredetector-1a48e",
+    "storage_bucket": "skincaredetector-1a48e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:235753731083:android:4af3d91912479bfcc2c30e",
+        "mobilesdk_app_id": "1:470108508014:android:1a1edcdd31703cbecd3b7f",
         "android_client_info": {
           "package_name": "com.example.flutter_application_1"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCfOc-1K8KjEAWMb7tsBXCr9_jTT2TPH8M"
+          "current_key": "AIzaSyDgErpJQEyBUTvBDjFA7EzvzveDAPgeesE"
         }
       ],
       "services": {
