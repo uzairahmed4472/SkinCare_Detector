@@ -261,23 +261,17 @@ class _Load_imageState extends State<Load_image> {
         // Continue even if info text fails to load
       });
 
-      // Update UI with results
+      // Update UI with results - Accept all valid predictions from the model
       setState(() {
         _output = output;
         _loading = false;
         _modelPredicting = false;
 
-        if (label != 'Melanoma' &&
-            label != 'Basal Cell Carcinoma' &&
-            label != 'Squamous Cell Carcinoma') {
-          augustus_output = 'Unknown';
-          augustus_confidence = '';
-          augustus_error = 'Not Supported.';
-        } else {
-          augustus_output = label;
-          augustus_confidence = '${(confidence * 100).round()}';
-          augustus_error = '';
-        }
+        // Accept all valid predictions, not just the three dangerous lesions
+        augustus_output = label;
+        augustus_confidence = '${(confidence * 100).round()}';
+        augustus_error = '';
+
         loaded_image = 0;
         temp = 1;
       });
