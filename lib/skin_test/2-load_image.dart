@@ -251,8 +251,12 @@ class _Load_imageState extends State<Load_image> {
       double confidence = output[0]['confidence'] as double;
       int index = output[0]["index"] as int;
 
-      print(
-          'DEBUG: Processing result - Label: $label, Confidence: $confidence, Index: $index');
+      print('========================================');
+      print('DEBUG: Processing result');
+      print('Label: $label');
+      print('Confidence: $confidence');
+      print('Index: $index');
+      print('========================================');
 
       // Load info text file for the predicted class (async, but don't wait)
       getText('assets/$index.txt').catchError((error) {
@@ -261,23 +265,27 @@ class _Load_imageState extends State<Load_image> {
         // Continue even if info text fails to load
       });
 
-      // Update UI with results - Accept all valid predictions from the model
+      // Update UI with results - Accept ALL valid predictions from the model
       setState(() {
         _output = output;
         _loading = false;
         _modelPredicting = false;
 
-        // Accept all valid predictions, not just the three dangerous lesions
+        // ACCEPT ALL PREDICTIONS - No filtering!
         augustus_output = label;
         augustus_confidence = '${(confidence * 100).round()}';
-        augustus_error = '';
+        augustus_error = ''; // Clear any error message
 
         loaded_image = 0;
         temp = 1;
       });
 
-      print(
-          'DEBUG: UI updated - Output: $augustus_output, Confidence: $augustus_confidence');
+      print('========================================');
+      print('DEBUG: UI updated successfully');
+      print('Output: $augustus_output');
+      print('Confidence: $augustus_confidence');
+      print('Error: $augustus_error');
+      print('========================================');
     } catch (e) {
       print('Error processing output: $e');
       setState(() {
