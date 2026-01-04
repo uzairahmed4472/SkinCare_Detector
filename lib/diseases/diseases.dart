@@ -141,7 +141,7 @@ class _DiseasesState extends State<Diseases> {
                                 color: Color.fromARGB(255, 1, 70, 126)),
                           ),
                           subtitle: Text(
-                            'info with details about skin cancer',
+                            'info with details about skin diseases',
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             textAlign: TextAlign.left,

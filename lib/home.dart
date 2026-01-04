@@ -121,7 +121,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 children: [
                   Text(
-                    "Dermatology Assistant",
+                    "Skin Disease Finder",
                     style: TextStyle(
                       fontSize: 30,
                       color: Colors.white,
@@ -129,7 +129,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Text(
-                    "A skin cancer detection app",
+                    "A deep learning-based skin disease diagnosis app",
                     style: TextStyle(fontSize: 12, color: Colors.white),
                   ),
                 ],

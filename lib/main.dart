@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dermatology Assistant',
+      title: 'Skin Disease Finder',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
       home: Splash2(),

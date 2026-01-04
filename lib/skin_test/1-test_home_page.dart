@@ -67,7 +67,7 @@ class _Test_Home_pageState extends State<Test_Home_page> {
             },
           ),
           title: Text(
-            'Skin cancer test',
+            'Skin disease test',
             style: TextStyle(
               fontSize: 20,
               color: Colors.white,

@@ -15,7 +15,7 @@
 
 
     <application
-        android:label="Dermatology Assistant"
+        android:label="Skin Disease Finder"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 
