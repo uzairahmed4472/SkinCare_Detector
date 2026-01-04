@@ -1,0 +1,1087 @@
+SKIN DISEASE FINDER:
+A DEEP LEARNING-BASED MOBILE APPLICATION
+FOR SKIN DISEASE DIAGNOSIS
+
+
+
+
+
+
+Uzair Ahmed
+Zaidullah Khan
+
+
+
+Department of Computing 
+Abasyn University Peshawar
+
+
+May 2025 
+SKIN DISEASE FINDER:
+A DEEP LEARNING-BASED MOBILE APPLICATION
+FOR SKIN DISEASE DIAGNOSIS
+
+
+
+
+Submitted by:
+Uzair Ahmed
+AUP-22SP-BSSE-20567
+Zaidullah Khan
+AUP-22SP-BSSE-20714
+
+Supervised by:
+Miss Zara Zainab
+
+
+A final year project report submitted in partial fulfillment of the requirement for the award of Bachelor of Science in Software Engineering.
+
+Department of Computing
+Abasyn University Peshawar
+May 2025
+APPROVAL FOR SUBMISSION
+This is certified that this project report entitled "Skin Disease Finder: A Deep Learning-Based Mobile Application for Skin Disease Diagnosis" is developed and submitted by Uzair Ahmed and Zaidullah Khan having registration numbers AUP-22SP-BSSE-20567, AUP-22SP-BSSE-20714. meets the required standards for warrant its acceptance by the department of computing, Abasyn University Peshawar in partial fulfillment for the award of Bachelor of Science in Software Engineering.
+
+Approval Committee:
+
+Supervisor	Name	Miss Zara Zainab
+	Designation	Lecturer
+	Institute	Abasyn University Peshawar
+	Signature	
+
+External Examiner	Name	Dr. Israr Awan
+	Designation	Lecturer
+	Institute	Islamia Collage Peshawar
+	Signature	
+
+Internal Examiner	Name	Mr. Saqib Shahid Rahim
+	Designation	Lecturer
+	Institute	Abasyn University Peshawar
+	Signature	
+
+
+Head of Department:
+Name	Dr. Fahad Masood
+Signature	
+
+ 
+
+DECLARATION OF ORIGINALITY
+
+
+We hereby declare that this project report is entitled as "Skin Disease Finder: A Deep Learning-Based Mobile Application for Skin Disease Diagnosis" is based on our original work except for citations and quotations which have been duly acknowledged. We also declare that it has not been previously and concurrently submitted for any other degree or award at Abasyn University Peshawar or any other institutions. 
+We hereby undertake that if any part of this work is proved to be copied or found to be a part of some other work, the Abasyn University Peshawar reserves the right to withdraw/revoke our degree.
+
+
+
+
+________________
+    Uzair Ahmed	
+
+
+
+________________
+    Zaidullah Khan	
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+This work is dedicated to our family and mentors,
+whose unwavering support, guidance and encouragement
+made this academic journey possible. 
+ACKNOWLEDGEMENTS
+
+We would like to thank everyone who has contributed to the successful completion of this project. We would like to express our gratitude to our project supervisor, Ms. Duri Shahwar for her invaluable advice, guidance and enormous patience throughout the development and completion of this project.
+
+In addition, we would also like to express our gratitude to our loving parents and friends who had helped and given us encouragement.
+
+
+ 
+ABSTRACT
+
+Skin diseases are among the most prevalent and underdiagnosed conditions globally, especially in rural and underserved regions. Traditional methods of consulting dermatologists are limited by access, cost, and delays, leading to mismanagement and worsened health outcomes. This project proposes the development of "Skin Disease Finder," a deep learning-based mobile application that enables users to perform preliminary skin disease identification using their smartphones. Built using Flutter for cross-platform mobile development, TensorFlow Lite for on-device machine learning inference, and Firebase for backend services including authentication and cloud storage, the application aims to provide accessible, immediate, and offline skin disease detection capabilities. The system utilizes a Convolutional Neural Network (CNN) model trained to classify multiple types of skin diseases. The application features user registration, image capture or upload options, immediate diagnosis suggestions with confidence scores, comprehensive disease information including symptoms, causes, and treatments, and offline support for diagnosis using a locally embedded TensorFlow Lite model. The anticipated outcomes include improved accessibility to preliminary skin disease screening, increased awareness about dermatological conditions, reduced unnecessary clinical visits, and facilitation of early detection, demonstrating how artificial intelligence and mobile technology can transform healthcare accessibility by bringing medical diagnostic capabilities directly to users' smartphones, especially in areas where dermatological services are unavailable or unaffordable. 
+TABLE OF CONTENTS
+
+
+APPROVAL FOR SUBMISSION	ii
+DECLARATION OF ORIGINALITY	iii
+DEDICATION	iv
+ACKNOWLEDGMENTS	v
+ABSTRACT	vi
+TABLE OF CONTENTS	vii
+LIST OF TABLES	xi
+LIST OF FIGURES	xii
+
+CHAPTER     TITLE                                                                                   PAGE
+	1	     INTRODUCTION
+		     1.1 Background	1
+		     1.2 Aim and Objective	2
+		     1.2.1 AI-Powered Skin Lesion Classification	2
+		     1.2.2 Quick and Advanced Test Modes	2
+		     1.2.3 Comprehensive Disease Information	3
+		     1.2.4 Test History and Tracking	3
+		     1.2.5 Doctor Location Services	3
+		     1.3 Scope of the Project	4
+ 		     1.3.1 Skin Cancer Detection Module	4
+		     1.3.2 User Registration and Authentication	4
+		     1.3.3 Image Upload and Processing	4
+		     1.3.4 TensorFlow Lite Model Integration	4
+		     1.3.5 Disease Information System	5
+		     1.3.6 Test History Management	5
+		     1.3.7 Advanced Test with Symptom Analysis	5
+		     1.3.8 Doctor Location and Mapping	5
+		     1.3.9 Chat Functionality	5
+		     1.3.10 Security and Data Protection	5
+		     1.3.11 Cross-Platform Mobile Support	5
+		     1.4 Project Limitation	6
+		     1.4.1 Model Accuracy Limitations	6
+		     1.4.2 Preliminary Diagnosis Only	6
+		     1.4.3 Limited to Nine Skin Lesion Types	6
+		     1.4.4 Resource and Dataset Constraints	6
+	2	     RELATED WORK
+		     2.1 Introduction	7
+		     2.2 Existing Systems	8
+		     2.2.1 AI-Powered Medical Diagnosis Applications	8
+		     2.2.2 Mobile Health (mHealth) Applications	8
+		     2.2.3 Deep Learning for Skin Lesion Classification	9
+		     2.2.4 TensorFlow Lite in Mobile Healthcare	9
+		     2.2.5 Telemedicine and Remote Diagnosis	9
+		     2.2.6 Medical Image Processing on Mobile Devices	9
+		     2.3 Critical Remarks	10
+		     2.3.1 Limited Accessibility of Medical Diagnosis Tools	10
+		     2.3.2 Need for On-Device Processing Capabilities	10
+		     2.3.3 Integration of Multiple Healthcare Features	10
+
+	3	     SOFTWARE ANALYSIS & SPECIFICATIONS
+		     3.1 Introduction	11
+		     3.2 System Analysis	11
+		     3.2.1 Problem Definition	11
+		     3.2.2 Proposed Solution	11
+		     3.3 Function Requirements	12
+		     3.3.1 User Module 	12
+		     3.3.2 Admin Module	12
+		     3.3.3 Product Module	13
+		     3.3.4 Chatbot Module	13
+		     3.3.5 Recommendation Module	13
+ 		     3.4 Non-Function Requirement	14
+		     3.4.1 Performance	14
+		     3.4.2 Usability	14
+		     3.4.3 Security	14
+		     3.4.4 Scalability	15
+		     3.4.5 Maintainability	15
+		     3.4.6 Compatibility	15
+
+	4	     SOFTWARE ARCHITECTURE & DESIGN
+		     4.1 Introduction	16
+		     4.2 System Architecture	16
+		     4.2.1 Model	16
+		     4.2.2 View	16
+		     4.2.3 Controller	16
+		     4.3 System Flow Chart	17
+		     4.4 Entity Relationship Diagram	18
+		     4.5 Data Flow Diagram	19
+		     4.5.1 Level 0 DFD	19
+		     4.5.2 Level 1 DFD	20
+		     4.5.3 Level 2 DFD	21
+		     4.6 User Interface Design	22
+		     4.7 Dashboard Interface Design	23
+		     4.8 Shop Page Design	24
+		     4.9 Add to Cart Design	25
+		     4.10 Featured Products Section	26
+		     4.11 Login Interface	26
+		     4.12 Most View Product Section	27
+		     4.13 Register Interface	27
+		     4.14 Top Categories Design	28
+		     4.15 Product Table	29
+		     4.16 Transaction Table	30
+		     4.17 Users Table	31	
+			
+	5	     DATABASE DESIGN
+		     5.1 Introduction	32
+		     5.2 Rational for Using MongoDB	32
+		     5.3 Key Collection and Attributes	33
+		     5.4 Users Collection	33
+		     5.5 Products Collection	34
+		     5.6 Orders Collection	34
+		     5.7 Category Collection	35
+		     5.8 Refresh Token Collection	35
+
+	6	     TOOLS & TECHNOLOGY USED
+		     6.1 Introduction	36
+		     6.2 Technology and Frameworks	36
+		     6.2.1 Flutter	36
+		     6.2.2 Dart	36
+		     6.2.3 Node.js	36
+		     6.2.4 Express.js	37
+		     6.2.5 MongoDB	37
+		     6.2.6 Mongoose	37
+		     6.3 Artificial Intelligence & NLP Tools	37
+		     6.3.1 Python and Scikit-learn	37
+		     6.3.2 Gemini API	37
+		     6.4 Development Tools	38
+		     6.4.1 Visual Studio Code	38
+		     6.4.2 Postman	38
+		     6.5 Product and Source Code Management	38
+		     6.5.1 Git	38
+		     6.5.2 GitHub	38
+		     6.6 Deployment Tools	38
+		     6.6.1 Vercel	38
+		     6.7 Libraries for Charts and UI Enhancements	39
+		     6.7.1 Charts.js	39
+		     6.7.2 Flutter Icons	39
+		     6.7.3 Framer Motion	39
+		     6.8 Form Management Library	39
+		     6.8.1 Formik	39
+		     6.8.2 Yup	39
+		
+	7	     TEST CASE SPECIFICATIONS
+		     7.1 Introduction	40
+		     7.2 Testing Strategy	40
+		     7.2.1 Unit Testing	40
+		     7.2.2 Integration Testing	41
+		     7.2.3 UI/UX Testing	41
+		     7.2.4 Validation Testing	41
+		     7.2.5 AI Feature Testing	42
+		     7.3 Test Case Format	42
+		     7.4 Test Cases	42
+		     7.4.1 Test Case for User Register	43
+		     7.4.2 Test Case for User Login	44
+		     7.4.3 Test Case for Products	44
+		     7.4.4 Text Case for Category	46
+		     7.4.5 Test Case for Order	47
+
+	8	     CONCLUSION & RECOMMENDATION 
+		     8.1 Conclusion	48
+		     8.2 Recommendation	49
+		     8.2.1 Enhance AI Models	49	
+		     8.2.2 Mobile App Integration	49
+		 
+          REFERENCES	50
+
+LIST OF TABLES
+
+Table 3.1	Functional Requirement							13
+
+Table 3.1	Non-Functional Requirement							15
+
+Table 7.1	Test Case Format								42
+
+Table 7.2	Test Case for User Registration						43
+
+Table 7.3	Test Case for User Login							44
+
+Table 7.4	Test Case for Product								44
+
+Table 7.5	Test Case for Category							46
+
+Table 7.6	Test Case for Order								47
+ 
+LIST OF FIGURES
+
+Figure 4.1	System Flow Chart 								17
+
+Figure 4.2	Entity Relation Diagram							18
+
+Figure 4.3 	DFD Level 0									19
+
+Figure 4.4 	DFD Level 1									20
+
+Figure 4.5 	DFD Level 2									21
+
+Figure 4.6	User Interface Design								22
+
+Figure 4.7 	Dashboard Interface Design							23
+
+Figure 4.8	Shop Page Design								24
+
+Figure 4.9	Add To Cart Design								25
+
+Figure 4.10	Featured Products Section Design						26
+
+Figure 4.11	Login Interface Design							26
+
+Figure 4.12	Most View Product Section Design						27
+
+Figure 4.13	Register Interface Design							27
+
+Figure 4.14 	Top Categories Design							28
+
+Figure 4.15 	Product Table Design								29
+
+Figure 4.16 	Transaction Table Design							30
+
+Figure 4.17	User Table Design								31
+
+Figure 5.1	Key Collection and Attributes						32
+
+Figure 5.2 	User Collection								33
+
+Figure 5.3 	Product Collection								34
+
+Figure 5.4 	Orders Collection								34
+
+Figure 5.5	Category Collection								35
+
+Figure 5.6 	Refresh Token Collection							35 
+CHAPTER 1
+
+
+
+INTRODUCTION
+
+
+1.1 Background
+In today's fast-paced healthcare landscape, skin diseases are among the most prevalent and underdiagnosed conditions, especially in rural and underserved regions. Dermatological disorders can vary widely, from mild irritations to serious infections or signs of systemic disease. However, lack of timely diagnosis often leads to mismanagement and worsened health outcomes. Traditional methods of consulting dermatologists are limited by access, cost, and delays. Many people hesitate to visit a doctor until symptoms become severe, and those living in remote areas often lack access to professional dermatological services. The growing prevalence of smartphones and advances in artificial intelligence, particularly deep learning, have created unprecedented opportunities to bring medical diagnostic capabilities directly to users' devices.
+Artificial Intelligence, particularly deep learning, has demonstrated remarkable success in medical image analysis, including dermatology. Convolutional Neural Networks (CNNs) have shown exceptional performance in classifying skin lesions, with some studies reporting accuracy levels comparable to or exceeding those of board-certified dermatologists [1]. Mobile health (mHealth) applications leveraging AI have the potential to democratize access to preliminary medical screening, enabling users to perform initial assessments from the comfort of their homes [2]. The integration of on-device machine learning models, such as TensorFlow Lite, allows for real-time inference without requiring constant internet connectivity, making these applications practical for use in various settings [3].
+However, while several research projects and commercial applications have explored AI-based skin cancer detection, many existing solutions face limitations such as requiring cloud connectivity, limited classification capabilities, or lack of comprehensive user support features. Additionally, most applications focus solely on detection without providing educational resources, test history tracking, or integration with healthcare provider networks. The need for a comprehensive, accessible, and user-friendly mobile application that combines accurate AI-powered detection with supportive features remains significant.
+This project introduces "Skin Disease Finder," a deep learning-based mobile application developed using Flutter that enables users to perform preliminary skin disease identification using their smartphones. The application utilizes a Convolutional Neural Network (CNN) model trained to classify multiple types of skin diseases. Built using Flutter for cross-platform mobile development, TensorFlow Lite for on-device inference, and Firebase for backend services, the system demonstrates how emerging AI technologies can be effectively applied in mobile healthcare to improve accessibility, reduce dermatological burdens, and facilitate early detection, especially in areas where dermatological services are unavailable or unaffordable.
+Through this project, we aim to contribute a practical solution that blends AI, mobile technology, and healthcare to create a more accessible, user-friendly, and comprehensive tool for preliminary skin cancer screening, potentially helping users identify concerning skin lesions earlier and seek appropriate medical attention when needed.
+1.2 Aims and Objectives
+The increasing prevalence of skin cancer and the challenges associated with accessing timely dermatological care have highlighted the need for accessible, technology-driven solutions. Despite advances in AI and mobile technology, many individuals lack convenient access to preliminary skin cancer screening tools. This project seeks to bridge that gap by developing a comprehensive mobile application that integrates AI-powered skin lesion classification with supportive features to enhance user awareness and facilitate early detection.
+The primary aim of this project is to develop "Skin Disease Finder," a mobile application that uses image recognition and deep learning to assist users in diagnosing skin conditions. By leveraging mobile development technologies alongside deep learning and cloud services, the system will provide an interactive and informative tool for preliminary skin disease identification while maintaining user privacy, offline functionality, and data security.
+Objective of the Project:
+1.2.1 AI-Powered Skin Disease Classification
+To design and implement an on-device machine learning system using TensorFlow Lite that can accurately classify multiple types of skin diseases from user-uploaded images, providing confidence scores and preliminary diagnostic information using a trained Convolutional Neural Network (CNN) model.
+1.2.2 Quick and Advanced Test Modes
+To develop two distinct testing modes: a quick test for rapid image analysis and an advanced test that incorporates additional symptom information (affected area, size, duration, itching, fever, skin characteristics, tissue damage) to provide more comprehensive assessment.
+1.2.3 Comprehensive Disease Information
+To create an educational module that provides detailed information about various skin conditions, including Melanoma, Basal Cell Carcinoma, Squamous Cell Carcinoma, Actinic Keratosis, and benign conditions, helping users understand their results and make informed decisions.
+1.2.4 Test History and Tracking
+To implement a secure history system using Firebase Firestore that allows users to track their test results over time, view previous analyses, and monitor changes in skin lesions, facilitating continuity of care.
+1.2.5 Doctor Location Services
+To integrate mapping functionality that helps users locate nearby dermatologists and healthcare facilities, enabling seamless transition from preliminary screening to professional medical consultation when needed.
+By achieving these objectives, the project aims to demonstrate how artificial intelligence and mobile technology can be effectively applied in healthcare to improve accessibility, raise awareness, and potentially facilitate early detection of skin cancer.
+
+
+1.3 Scope of the Project
+This project focuses on designing and developing a comprehensive AI-powered mobile application for preliminary skin cancer detection. The system is built using Flutter for cross-platform mobile development, TensorFlow Lite for on-device machine learning inference, and Firebase for backend services including authentication, cloud storage, and database management.
+The platform will allow users to upload images of skin lesions, receive AI-powered classification results, access comprehensive disease information, track their test history, and locate nearby healthcare providers through an intuitive mobile interface. The system is designed to be accessible, user-friendly, and supportive while maintaining appropriate medical disclaimers.
+1.3.1 Skin Disease Detection Module
+Develop an on-device machine learning system using TensorFlow Lite that can classify multiple types of skin diseases from a curated dataset of labeled skin disease images. The CNN model will process image input and return the top most probable skin diseases with confidence scores. The system will provide preliminary diagnostic information and disease suggestions.
+1.3.2 User Registration and Authentication
+Implement a secure user registration and login system using Firebase Authentication. This will enable personalized features such as test history tracking and user-specific data management.
+1.3.3 Image Upload and Processing
+Allow users to capture or upload images of skin lesions from their device camera or gallery. The system will process these images, resize them appropriately for the model, and perform inference using the TensorFlow Lite model.
+1.3.4 TensorFlow Lite Model Integration
+Integrate a pre-trained deep learning model (model_unquant.tflite) that performs on-device inference, ensuring privacy and enabling offline functionality. The model will process images and return classification results with confidence scores.
+
+1.3.5 Disease Information System
+Implement a comprehensive information module that provides detailed descriptions, symptoms, characteristics, and treatment information for each type of skin lesion detected, helping users understand their results and make informed decisions.
+1.3.6 Test History Management
+Enable users to view and manage their test history stored in Firebase Firestore. This includes viewing previous test results, images, confidence scores, and associated symptom data, facilitating continuity of care and tracking changes over time.
+1.3.7 Advanced Test with Symptom Analysis
+Develop an advanced testing mode that collects additional information including affected area location, lesion size, duration of injury, presence of itching or fever, affected skin characteristics (shape, color), and tissue damage indicators to provide more comprehensive assessment.
+1.3.8 Doctor Location and Mapping
+Integrate Google Maps functionality to help users locate nearby dermatologists and healthcare facilities, enabling seamless transition from preliminary screening to professional medical consultation.
+1.3.9 Chat Functionality
+Implement a chat interface that allows users to communicate with healthcare providers or access automated support for questions about skin conditions, test results, and general dermatological information.
+1.3.10 Security and Data Protection
+Apply standard security practices including Firebase Authentication, encrypted data transmission, secure image storage, and protection of user privacy. All medical data will be handled in compliance with privacy considerations.
+1.3.11 Cross-Platform Mobile Support
+Design a fully responsive mobile interface using Flutter to ensure usability across Android and iOS platforms, with adaptive layouts for different screen sizes and device capabilities.
+
+1.4 Project Limitations
+While the project aims to deliver a robust and accessible mobile application for preliminary skin cancer detection, it is important to recognize certain limitations due to time constraints, resource availability, and the scope boundaries defined for this final year project. These limitations include the following:
+1.4.1 Model Accuracy Limitations
+i.	The AI model is trained on a specific dataset and may not achieve the same accuracy as clinical dermatological examinations. The application provides preliminary screening only and should not replace professional medical diagnosis.
+ii.	Model performance may vary based on image quality, lighting conditions, and the specific characteristics of the skin lesion being analyzed.
+iii.	The model is limited to classifying nine specific types of skin lesions and may not accurately identify rare or atypical conditions.
+1.4.2 Preliminary Diagnosis Only
+The application is designed for preliminary screening and educational purposes only. It does not provide definitive medical diagnosis, and users are strongly advised to consult qualified healthcare professionals for accurate diagnosis and treatment recommendations. The system includes appropriate medical disclaimers to ensure users understand the limitations.
+1.4.3 Limited to Trained Disease Categories
+The classification system is constrained to the diseases included in the training dataset. The CNN model can only identify skin diseases that it has been trained on. Conditions outside the training dataset or rare diseases may not be accurately identified. The model's accuracy depends on the quality and diversity of the training data.
+1.4.4 Resource and Dataset Constraints
+i.	Development is constrained by available computational resources, which may limit model optimization and fine-tuning capabilities.
+ii.	The project timeline limits the scope of extensive user testing, clinical validation, and iterative refinement of the AI model.
+iii.	The model utilizes a pre-trained TensorFlow Lite model rather than training a custom model from scratch, which may limit optimization for specific use cases or populations.
+
+
+
+CHAPTER 2
+
+
+
+RELATED WORK
+
+
+2.1 Introduction
+The integration of artificial intelligence in medical diagnosis, particularly in dermatology, has evolved significantly with most research focusing on desktop and cloud-based systems rather than mobile implementations. This section examines relevant literature on AI-driven medical image analysis, mobile health applications, and on-device machine learning, with particular emphasis on skin lesion classification and accessibility.
+Recent studies demonstrate the remarkable effectiveness of deep learning methods for skin lesion classification. Convolutional Neural Networks (CNNs) have shown exceptional performance, with some research reporting that AI systems can achieve accuracy levels comparable to or exceeding those of board-certified dermatologists [5]. These systems leverage large datasets of dermoscopic images to learn distinguishing features of various skin conditions, enabling automated preliminary screening capabilities.
+Mobile health (mHealth) applications have become increasingly important tools for healthcare delivery, particularly in underserved and remote areas [6]. These applications leverage the ubiquity of smartphones to bring medical services directly to users, reducing barriers to healthcare access. Studies have shown that mHealth applications can significantly improve healthcare outcomes by enabling early detection, increasing patient engagement, and facilitating continuity of care [7].
+On-device machine learning, particularly through frameworks like TensorFlow Lite, has emerged as a critical technology for mobile healthcare applications [8]. By performing inference directly on the device, these systems ensure user privacy, enable offline functionality, and reduce latency compared to cloud-based solutions. This approach is particularly important for medical applications where data privacy and real-time performance are crucial considerations.
+However, this project addresses a critical gap in current mobile healthcare applications: the integration of accurate AI-powered skin lesion classification with comprehensive user support features. Unlike standalone diagnostic tools, comprehensive healthcare applications must combine accurate detection with educational resources, history tracking, and integration with healthcare provider networks. The mobile-first approach presents unique challenges including limited computational resources, varying image quality, and the need for intuitive user interfaces that can be used by individuals with varying levels of technical expertise.
+The mobile healthcare model presents unique implementation challenges and opportunities. AI models must achieve high accuracy despite device constraints, while applications require comprehensive features that support users throughout their healthcare journey, from initial screening to professional consultation. 
+2.2 Existing Systems
+The modern healthcare technology landscape demonstrates widespread use of AI and mobile applications to improve diagnostic capabilities and healthcare accessibility. The following system components have inspired various aspects of the proposed project:
+2.2.1 AI-Powered Medical Diagnosis Applications
+Leading medical AI systems, such as those developed for radiology and pathology, use deep learning algorithms to analyze medical images and assist healthcare professionals in diagnosis. These systems leverage convolutional neural networks trained on large datasets of medical images to identify patterns and anomalies. Our system adopts similar deep learning techniques, utilizing a pre-trained TensorFlow Lite model to classify skin lesions. By processing user-uploaded images directly on the device, the system provides immediate preliminary screening while maintaining user privacy and enabling offline functionality.
+2.2.2 Mobile Health (mHealth) Applications
+Healthcare applications like MyChart, WebMD, and various telemedicine platforms have successfully demonstrated the potential of mobile technology in healthcare delivery [9]. These applications enable users to access medical information, schedule appointments, and communicate with healthcare providers through their smartphones. Our application builds upon these concepts by integrating AI-powered preliminary screening with comprehensive user support features, creating a more holistic mobile healthcare experience.
+2.2.3 Deep Learning for Skin Lesion Classification
+Research projects such as the ISIC (International Skin Imaging Collaboration) challenge have demonstrated the effectiveness of deep learning models for skin lesion classification. These systems have achieved accuracy levels comparable to dermatologists in controlled studies [10]. Our project leverages similar deep learning architectures, adapted for mobile deployment through TensorFlow Lite, to provide accessible skin lesion classification capabilities.
+2.2.4 TensorFlow Lite in Mobile Healthcare
+TensorFlow Lite has been successfully deployed in various mobile healthcare applications, enabling on-device machine learning inference for tasks ranging from activity recognition to medical image analysis. This framework allows models to run efficiently on mobile devices with limited computational resources, making AI-powered healthcare accessible to a broader user base. Our application utilizes TensorFlow Lite to perform skin lesion classification directly on users' devices, ensuring privacy and enabling offline functionality.
+2.2.5 Telemedicine and Remote Diagnosis
+Telemedicine platforms have revolutionized healthcare delivery by enabling remote consultations and diagnosis. These systems combine video conferencing, image sharing, and electronic health records to facilitate remote healthcare delivery. Our application complements these systems by providing preliminary screening capabilities that can inform telemedicine consultations, enabling more efficient use of healthcare resources and improving access to dermatological care.
+2.2.6 Medical Image Processing on Mobile Devices
+Various mobile applications have successfully implemented medical image processing capabilities, from simple measurement tools to complex diagnostic aids. These applications demonstrate the feasibility of performing sophisticated image analysis on mobile devices. Our project extends these capabilities by integrating deep learning-based classification, enabling users to receive preliminary diagnostic information directly from their smartphones.
+2.3 Critical Remarks
+Despite significant developments in AI-powered medical diagnosis and mobile health applications, current systems and literature often overlook several key aspects particularly relevant to accessible, comprehensive mobile healthcare implementations. The proposed system aims to address these gaps:
+2.3.1 Limited Accessibility of Medical Diagnosis Tools
+Many existing AI-powered medical diagnosis systems are designed for clinical use or require cloud connectivity, limiting their accessibility to users in remote areas or those with limited internet access. Additionally, most systems focus solely on detection without providing comprehensive user support features. Our project addresses this gap by combining on-device AI-powered classification with comprehensive features including disease information, test history tracking, and healthcare provider location services. This integration creates a more accessible and supportive user experience, particularly important for preliminary screening applications where user education and follow-up care are crucial.
+2.3.2 Need for On-Device Processing Capabilities
+Many existing mobile healthcare applications rely on cloud-based processing, which raises privacy concerns and requires constant internet connectivity. This approach limits usability in areas with poor connectivity and may deter privacy-conscious users. To address this challenge, our project adopts TensorFlow Lite for on-device inference, ensuring user privacy, enabling offline functionality, and reducing latency. This approach makes AI-powered healthcare more accessible while maintaining the performance and accuracy necessary for preliminary medical screening.
+2.3.3 Integration of Multiple Healthcare Features
+While many existing applications focus on single aspects of healthcare (e.g., diagnosis, information, or provider location), comprehensive healthcare applications must integrate multiple features to provide a complete user experience. Our proposed system addresses this limitation by combining AI-powered detection, comprehensive disease information, test history tracking, healthcare provider location services, and chat functionality within a unified mobile application. This holistic approach supports users throughout their healthcare journey, from initial screening to professional consultation, fostering better healthcare outcomes and user engagement.
+CHAPTER 3
+
+SOFTWARE ANALYSIS & SPECIFICATIONS
+3.1 Introduction
+This section describes the system's functional requirements, non-functional requirements and the software specifications needed to develop the intelligent e-commerce platform. It explains the components involved in system behavior, architectural needs, technologies used and quality attributes of the software.
+3.2 System Analysis
+3.2.1 Problem Definition
+Traditional approaches to skin cancer detection require physical visits to dermatologists, which can be time-consuming, expensive, and inaccessible for many individuals, particularly those in remote or underserved areas. Early detection is crucial for successful treatment outcomes, but barriers to accessing dermatological care prevent many individuals from receiving timely screening. Additionally, many people lack awareness about skin cancer symptoms and may delay seeking medical attention. Unlike clinical diagnostic systems, mobile applications for preliminary skin cancer screening must balance accuracy with accessibility, privacy, and user-friendliness. As a result, there is a significant need for accessible, AI-powered mobile applications that can provide preliminary screening capabilities while maintaining appropriate medical disclaimers and facilitating connections to professional healthcare providers.
+3.2.2 Proposed Solution
+This project aims to develop a comprehensive mobile application for preliminary skin cancer detection that combines AI-powered classification with supportive features. The system leverages deep learning and mobile technology to provide accessible preliminary screening. It includes:
+
+i.	AI-Powered Skin Lesion Classification:
+Uses a TensorFlow Lite model trained on dermoscopic images to classify nine different types of skin lesions from user-uploaded images. The system performs on-device inference, ensuring privacy and enabling offline functionality. The model provides confidence scores and preliminary diagnostic information to help users understand their results [11].
+ii.	Comprehensive Test Modes:
+The application offers both quick and advanced test modes. The quick test provides rapid image analysis, while the advanced test incorporates additional symptom information (affected area, size, duration, itching, fever, skin characteristics, tissue damage) to provide more comprehensive assessment. This dual-mode approach accommodates different user needs and levels of detail required [12].
+iii.	Full-Featured Healthcare Support System:
+Includes secure user authentication via Firebase, comprehensive disease information, test history tracking, healthcare provider location services, and chat functionality. It ensures a complete user experience from initial screening through to accessing professional medical consultation when needed.
+3.3 Functional Requirements
+The functional requirements define the core features and operations the system must perform.
+3.3.1 User Module
+i.	User registration and secure login using Firebase Authentication.
+ii.	Upload or capture images of skin lesions from camera or gallery.
+iii.	Perform quick or advanced skin lesion tests.
+iv.	View test results with confidence scores and preliminary diagnostic information.
+v.	Access comprehensive disease information.
+vi.	View and manage test history.
+vii.	Locate nearby healthcare providers using integrated mapping services.
+viii.	Access chat functionality for questions and support.
+3.3.2 Skin Lesion Detection Module
+i.	Load and initialize TensorFlow Lite model on application startup.
+ii.	Process uploaded images for model inference.
+iii.	Classify skin lesions into nine categories with confidence scores.
+iv.	Display results with appropriate medical disclaimers.
+v.	Handle both quick and advanced test modes.
+vi.	Store test results in Firebase Firestore for history tracking.
+3.3.3 Disease Information Module
+i.	Display comprehensive information about each type of skin lesion.
+ii.	Provide details about symptoms, characteristics, and treatment options.
+iii.	Include images and visual aids for educational purposes.
+iv.	Navigate between different disease information pages.
+3.3.4 History and Tracking Module
+i.	Store test results with images, classifications, confidence scores, and timestamps.
+ii.	Retrieve and display user's test history.
+iii.	Allow users to view previous test results and associated information.
+iv.	Enable deletion of test history entries.
+v.	Support filtering and searching through test history.
+
+3.3.5 Mapping and Location Module
+i.	Integrate Google Maps for healthcare provider location.
+ii.	Enable users to search for nearby dermatologists.
+iii.	Display healthcare facilities on interactive maps.
+iv.	Provide directions and contact information for healthcare providers.
+
+Table 3.1 Functional Requirements
+S.No	Functionality	Description
+1	User Registration & Login	Users can register, log in securely using Firebase Authentication and manage their account information.
+2	Image Upload & Capture	Users can upload images from gallery or capture images using device camera for skin lesion analysis.
+3	Skin Lesion Classification	AI model classifies uploaded images into nine categories with confidence scores.
+4	Quick Test Mode	Users can perform rapid image analysis without additional symptom information.
+5	Advanced Test Mode	Users can provide additional symptom information for more comprehensive assessment.
+6	Disease Information	Users can access comprehensive information about different skin conditions.
+7	Test History Management	Users can view, track, and manage their test results over time.
+8	Healthcare Provider Location	Users can locate nearby dermatologists and healthcare facilities using integrated maps.
+9	Chat Functionality	Users can communicate with healthcare providers or access automated support.
+10	Data Privacy & Security	User data is securely stored and transmitted with appropriate privacy protections.
+11	Offline Functionality	Core detection features work offline using on-device TensorFlow Lite model.
+
+3.4 Non-Functional Requirements
+These define the quality attributes the system must meet.
+3.4.1 Performance
+i.	Fast model inference time (typically 2-5 seconds for image classification).
+ii.	Efficient image processing and resizing for model input.
+iii.	Optimized TensorFlow Lite model for mobile devices.
+iv.	Minimal app startup time and smooth navigation.
+3.4.2 Usability
+i.	Clean, intuitive mobile UI using Flutter's adaptive design.
+ii.	Simple navigation optimized for mobile users.
+iii.	Clear instructions, tooltips, and feedback messages.
+iv.	Accessible design for users with varying technical expertise.
+v.	Appropriate medical disclaimers and user guidance.
+3.4.3 Security
+i.	User authentication using Firebase Authentication.
+ii.	Secure data transmission using HTTPS.
+iii.	Encrypted storage of sensitive user data.
+iv.	Privacy protection for medical images and test results.
+v.	Compliance with healthcare data privacy considerations.
+
+3.4.4 Scalability
+Modular architecture that supports future enhancements like:
+i.	Integration with additional AI models for improved accuracy.
+ii.	Expansion to include more skin lesion types.
+iii.	Integration with electronic health records (EHR) systems.
+iv.	Support for multiple languages and regional variations.
+3.4.5 Maintainability
+i.	Code written using clean architecture and Flutter best practices.
+ii.	Comments and documentation provided for all modules.
+iii.	Easily extendable structure for adding new features.
+iv.	Modular design allowing independent updates to components.
+
+3.4.6 Compatibility
+i.	Cross-platform support: Android and iOS.
+ii.	Compatible with various screen sizes via adaptive Flutter UI layouts.
+iii.	Support for different device capabilities and performance levels.
+Table 3.2 Non-Functional Requirements
+S.No	Requirement	Description
+1	Performance	The system should perform image classification within 2–5 seconds on typical mobile devices.
+2	Usability	The UI should be intuitive, accessible, and include appropriate medical disclaimers.
+3	Security	Implements secure authentication (Firebase), encrypted data transmission (HTTPS), and privacy protection.
+4	Scalability	System should support future expansion (more lesion types, features, integrations).
+5	Maintainability	Modular code and proper documentation ensure ease of updates and debugging.
+6	Compatibility	Cross-platform support (Android and iOS) with adaptive layouts using Flutter.
+7	Reliability	System should handle unexpected input, network failures, or model errors gracefully.
+8	Data Privacy	User medical data is encrypted, securely stored, and not exposed to unauthorized entities.
+CHAPTER 4
+
+SOFTWARE ARCHITECTURE & DESIGN
+4.1 Introduction
+This chapter outlines the architectural structure and design of the Skin Disease Finder mobile application. The system has been developed using a modular, mobile-first architecture that integrates deep learning components for skin disease classification, cloud services for data management, and user support features for comprehensive healthcare assistance. 
+4.2 System Architecture 
+The architecture of the Skin Disease Finder follows a client-server pattern with on-device AI processing. The application is built using Flutter for the mobile frontend, Firebase for backend services (authentication, database, storage), and TensorFlow Lite for on-device machine learning inference using a trained CNN model. This architecture promotes modularity, separation of concerns, and ease of maintenance while ensuring user privacy through on-device processing and offline support [13].
+4.2.1 Mobile Application Layer (Flutter)
+The Flutter application serves as the primary user interface and handles all user interactions. It includes UI components for image capture/upload, test result display, disease information, history management, and mapping services. The application communicates with Firebase services for authentication and data storage, while performing AI inference locally using TensorFlow Lite.
+4.2.2 AI/ML Layer (TensorFlow Lite)
+The TensorFlow Lite model performs on-device skin disease classification using a trained Convolutional Neural Network (CNN). The model is loaded into memory at application startup and processes user-uploaded images to classify them into multiple disease categories, returning the top most probable diseases with confidence scores. This layer ensures privacy by keeping all image processing on the device and enables offline functionality.
+4.2.3 Backend Services Layer (Firebase)
+Firebase provides backend services including Authentication for user management, Firestore for storing test history and user data, and Cloud Storage for image storage if needed. This serverless architecture eliminates the need for custom backend infrastructure while providing scalable, secure services.
+
+4.3 System Flow Chart
+The following flow chart represents the overall workflow of the Skin Disease Finder application. It outlines how users interact with various modules including authentication, image capture/upload, deep learning-based classification, result display, disease information access, and feedback submission.
+ 
+Figure 4.1: System Flow Chart for Skin Disease Finder Application
+4.4 Entity Relationship Diagram 
+The ERD illustrates the database structure of the platform and defines the relationships between key entities such as Users, Test Results, Disease Information, and Feedback.
+ 
+Figure 4.2: ER Diagram of the Skin Disease Finder Application
+
+
+4.5 Data Flow Diagram (DFD)
+The following Data Flow Diagram (DFD) illustrates the logical flow of data within the Skin Disease Finder application. It represents how data moves between the external entities and internal system processes including user authentication, image capture/upload and processing, deep learning-based skin disease classification, test result storage, disease information retrieval, and feedback submission. The DFD highlights key data stores like the user database, test history, and disease information. Through this structured representation, the DFD provides a clear understanding of how different modules collaborate to deliver a comprehensive and accessible skin disease detection experience.
+4.5.1 Level 0 DFD 
+This diagram represents the entire Skin Disease Finder application as a single process. It shows external entities such as the User and Admin interacting with the system, which processes requests like image upload, skin disease classification, test history management, disease information access, and feedback submission.
+
+ 
+Figure 4.3: DFD Level 0
+4.5.2 Level 1 DFD 
+This level breaks down the core processes of the system, including User Registration & Login, Image Capture/Upload & Processing, Skin Disease Classification using CNN, Test Result Management, Disease Information Access, and Feedback Submission. It shows data flow between these processes and the system's database (Firestore).
+ 
+Figure 4.4: DFD Level 1
+
+
+4.5.3 Level 2 DFD 
+This diagram provides a more detailed view of specific sub-processes from Level 1, such as the internal workings of the CNN model inference through TensorFlow Lite, image preprocessing, test result storage and retrieval, and disease information database queries.
+ 
+Figure 4.5: DFD Level 2
+
+
+
+4.6 User Interface Design
+The user interface (UI) of the Skin Disease Finder application has been developed using Flutter, following a responsive and widget-based approach. The design emphasizes clarity, usability, accessibility, and visual appeal to enhance the user experience while maintaining appropriate medical disclaimers and user guidance. The UI is designed to be suitable for users of all literacy levels.
+ 
+Figure 4.6: User Interface Design
+
+
+
+
+
+
+
+
+4.7 Home Screen Interface Design
+The home screen provides the main navigation hub for the application. It features:
+i.	Main menu with options for making tests, viewing diseases, accessing history, and about information.
+ii.	Clear visual hierarchy with gradient design and intuitive icons.
+iii.	Quick access to primary functions (Make Test, Diseases, History, About Us, Logout).
+
+ 
+Figure 4.7: Dashboard Interface Design
+
+
+
+
+
+
+4.8 Test Selection Interface Design
+The test selection page allows users to choose between quick and advanced test modes. Features include:
+i.	Clear visual distinction between quick and advanced test options.
+ii.	Information icon for accessing test guidelines and disclaimers.
+iii.	Intuitive navigation with back button and home access.
+
+ 
+Figure 4.8: Shop Page Design
+
+
+
+
+4.9 Image Upload Interface Design
+This interface allows users to upload or capture images of skin lesions. Features include:
+i.	Camera and gallery access options.
+ii.	Image preview before processing.
+iii.	Loading indicators during model inference.
+iv.	Clear instructions and guidance for image capture.
+
+ 
+Figure 4.9: Add To Cart Design
+
+
+
+
+
+
+
+4.10 Test Results Display Design
+The results page displays classification results with confidence scores. Features include:
+i.	Clear display of detected skin lesion type and confidence percentage.
+ii.	Color-coded indicators for malignant vs. benign conditions.
+iii.	Access to detailed disease information.
+iv.	Options to save results to history.
+v.	Appropriate medical disclaimers.
+ 
+Figure 4.10: Featured Products Section Design
+
+4.11 Login Interface
+The login page allows registered users to securely access their accounts using Firebase Authentication. It includes:
+i.	Email and password fields.
+ii.	Error handling for invalid credentials.
+iii.	Navigation to registration page for new users.
+
+ 
+Figure 4.11: Login Interface Design
+4.12 Disease Information Interface Design
+The disease information pages provide comprehensive details about each skin condition. Features include:
+i.	High-quality images of the condition.
+ii.	Detailed descriptions, symptoms, and characteristics.
+iii.	Treatment information and recommendations.
+iv.	Navigation between different disease pages.
+ 
+Figure 4.12: Most View Product Section Design
+
+4.13 Register Interface
+The registration form captures user details for account creation using Firebase Authentication. Features include:
+i.	Input fields: Name, email, password, phone number.
+ii.	Form validation and success/error notifications.
+iii.	Secure password requirements.
+
+ 
+Figure 4.13: Register Interface Design
+4.14 History Interface Design
+The history page displays all previous test results. Features include:
+i.	Expandable cards showing test results with dates and confidence scores.
+ii.	Color-coded indicators for different lesion types.
+iii.	Image thumbnails for each test result.
+iv.	Options to view details or delete entries.
+v.	Filtering and search capabilities.
+ 
+Figure 4.14: Top Categories Design
+
+
+
+
+
+4.14 Product Table 
+A tabular interface in the admin dashboard lists all products with options to:
+i.	Edit or delete products.
+ii.	View inventory status.
+iii.	Toggle product availability.
+
+ 
+Figure 4.15: Product Table Design
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4.15 Transaction Table 
+Displays transaction records in a tabular format with columns like:
+i.	Transaction ID
+ii.	User Name and Email
+iii.	Order Amount
+iv.	Payment Status
+
+ 
+Figure 4.16: Transaction Table Design
+
+
+
+
+
+
+
+
+4.16 Users Table 
+i.	This table shows all registered users with relevant information such as:
+ii.	User ID
+iii.	Name and Email
+iv.	Role (User/Admin)
+v.	Account Status
+vi.	Last Login
+
+ 
+Figure 4.17: User Table Design
+
+
+
+
+
+
+
+CHAPTER 5
+
+DATABASE DESIGN
+5.1 Introduction
+Database design is a critical component of any mobile application system, as it determines how data is stored, accessed and managed. For the Dermatology Assistant application, Firebase Firestore, a NoSQL cloud database, has been selected due to its flexibility, scalability, real-time synchronization capabilities, and seamless integration with Firebase services [14]. Firestore is well-suited for mobile applications with Flutter frontend and provides a schema-less structure that aligns with the evolving needs of healthcare applications while ensuring data security and privacy.
+The database design includes multiple collections to support the platform's core functionalities: user management, test result storage, disease information, and healthcare provider data. The real-time synchronization capabilities of Firestore enable immediate updates across devices, which is particularly important for healthcare applications where timely access to information is crucial.
+5.2 Rational for Using Firebase Firestore
+Firebase Firestore is ideal for mobile healthcare applications due to its flexible schema design, which allows developers to modify data structures without significant overhead or database migration. It uses a document-oriented structure that stores data in JSON-like documents, enabling a natural mapping between application objects and database records. This structure supports embedded documents and arrays, which reduces the need for complex joins and improves query performance. Firestore is also highly scalable, capable of efficiently handling high read/write operations and large volumes of user data, making it suitable for applications experiencing rapid growth. Additionally, Firestore integrates seamlessly with Flutter through the Firebase SDK, simplifying data validation, modeling and interaction within the application. The real-time synchronization feature ensures that data updates are immediately reflected across all connected devices, which is essential for healthcare applications. Furthermore, Firestore provides built-in security rules that enable fine-grained access control, ensuring that user medical data is protected and only accessible to authorized users.
+
+
+5.3 Key Collections and Attributes
+The platform utilizes the following core collections:
+ 
+Figure 5.1: Key Collection and Attributes
+
+5.4 Users Collection
+Stores information about registered users. Managed through Firebase Authentication with additional user profile data stored in Firestore.
+ 
+Figure 5.2: Users Collection
+
+
+5.5 Test Results Collection
+Holds all test result data including images, classifications, confidence scores, symptom information, and timestamps.
+ 
+Figure 5.3: Test Results Collection
+
+5.6 Disease Information Collection
+Stores comprehensive information about different skin conditions including descriptions, symptoms, images, and treatment information.
+ 
+Figure 5.4: Disease Information Collection
+
+
+5.7 Healthcare Providers Collection
+Stores information about dermatologists and healthcare facilities including location, contact information, and specialties.
+ 
+Figure 5.5: Healthcare Providers Collection
+
+5.8 Chat Messages Collection
+Stores chat conversation data between users and healthcare providers or support staff.
+ 
+Figure 5.6: Chat Messages Collection
+ 
+CHAPTER 6
+
+TOOLS & TECHNOLOGY USED
+6.1 Introduction
+This chapter provides an overview of the tools, technologies and frameworks utilized in the development of the intelligent shopping platform. The system integrates modern full-stack mobile development tools with artificial intelligence components to provide a personalized, responsive and scalable e-commerce solution. Each tool has been selected based on its relevance, performance, community support and ease of integration.
+6.2 Technologies and Frameworks
+6.2.1 Flutter 
+Flutter is a cross-platform UI framework developed by Google, used for building native mobile applications for Android and iOS from a single codebase. It uses the Dart programming language and provides a rich set of pre-built widgets, enabling the creation of beautiful, performant, and responsive user interfaces. Flutter's hot reload feature accelerates development and allows for rapid iteration.
+6.2.2 Dart 
+Dart is the programming language used by Flutter for developing mobile applications. It offers strong typing, async/await support, and excellent performance, making it ideal for building complex mobile applications with smooth animations and responsive user interfaces.
+6.2.3 Node.js 
+Node.js is a JavaScript runtime built on Chrome’s V8 engine. It allows developers to run JavaScript on the server side and is used to build scalable backend services and RESTful APIs.
+
+
+6.2.4 Express.js 
+Express.js is a lightweight Node.js framework used to develop backend APIs. It simplifies routing, middleware and server-side logic, allowing the application to handle authentication, data processing and admin operations efficiently.
+6.2.5 MongoDB 
+MongoDB is a NoSQL, document-based database used for storing dynamic data structures. It supports flexible schemas and high performance for read/write operations, making it suitable for e-commerce systems.
+6.2.6 Mongoose 
+Mongoose is an Object Data Modeling library for MongoDB and Node.js. It provides schema validation, relationships between collections and object mapping to work seamlessly with MongoDB in a Node.js environment.
+6.3 Artificial Intelligence & NLP Tools
+6.3.1 Python and Scikit-learn
+Python, along with the Scikit-learn library, is used to implement the product recommendation engine. The system utilizes classical machine learning algorithms to analyze user behavior and product attributes. By applying content-based filtering and collaborative filtering techniques, it generates intelligent and personalized product suggestions without the need for deep learning frameworks.
+6.3.2 Gemini API
+The Gemini API is used to power the chatbot system, enabling it to understand and respond to customer queries using advanced natural language processing. By integrating Gemini, the chatbot delivers conversational and context-aware support, assists with product recommendations, and enhances overall user engagement through intelligent dialogue.
+
+6.4 Development Tools
+6.4.1 Visual Studio Code 
+VS Code is the primary integrated development environment used for writing, editing and debugging Flutter mobile application code. It supports multiple extensions for Flutter, Dart, and Git integration, providing a comprehensive development environment.
+6.4.2 Android Studio / Xcode
+Android Studio is used for Android development and testing, while Xcode is used for iOS development and testing. These IDEs provide emulators, debugging tools, and device testing capabilities essential for mobile application development.
+6.5 Project & Source Code Management
+6.5.1 Git 
+Git is used for local version tracking of the codebase, allowing developers to manage changes, create branches and resolve conflicts during development.
+6.5.2 GitHub 
+GitHub hosts the remote repository for the project and enables collaboration, pull requests, issue tracking and team reviews during development.
+6.6 Deployment Tools 
+6.6.1 Google Play Store and Apple App Store 
+Mobile applications built with Flutter can be deployed to Google Play Store for Android and Apple App Store for iOS. These platforms provide distribution channels for mobile applications, enabling users to download and install the app on their devices. The Firebase backend services are automatically hosted and scaled by Google Cloud Platform.
+
+
+6.7 Libraries for UI Enhancements
+6.7.1 Google Maps Flutter
+The google_maps_flutter package is used to integrate interactive maps for healthcare provider location services. This enables users to search for and locate nearby dermatologists and healthcare facilities.
+6.7.2 Image Picker
+The image_picker package is used to enable users to capture images from the device camera or select images from the gallery for skin lesion analysis.
+6.7.3 Flutter Icons and Material Icons
+Flutter Icons and Material Icons are used to enhance visual cues in navigation bars, buttons, forms and modals across the user interface, providing a consistent and modern design language appropriate for healthcare applications.
+6.7.4 Shared Preferences
+The shared_preferences package is used for local data storage, allowing the application to store user preferences, test settings, and temporary data on the device.
+6.8 Additional Libraries
+6.8.1 TFLite Package
+The tflite package provides Flutter bindings for TensorFlow Lite, enabling the application to load and run the pre-trained skin lesion classification model on the device.
+6.8.2 Firebase Packages
+Various Firebase packages (firebase_core, firebase_auth, cloud_firestore) are used to integrate Firebase services including authentication, database, and cloud storage capabilities.
+6.8.3 BLoC Pattern
+The bloc and flutter_bloc packages are used to implement the BLoC (Business Logic Component) pattern for state management, ensuring clean separation of business logic and UI components.
+
+
+CHAPTER 7
+
+TEST CASE SPECIFICATIONS
+7.1 Introduction
+Testing is a critical phase in the software development lifecycle, ensuring that the system meets its functional and non-functional requirements. For the intelligent shopping platform, a combination of manual testing, unit testing and API testing was performed to validate all modules, including authentication, product management, chatbot responses, recommendation accuracy and UI responsiveness.
+This chapter presents the test strategy adopted, types of testing conducted and sample test cases to verify the integrity and usability of the application.
+7.2 Testing Strategy
+The project employed the following testing methods:
+7.2.1 Unit Testing
+To test individual functions, components and backend routes to ensure that each performs its intended task correctly in isolation.
+Application in Project:
+i.	Backend APIs were tested using tools like Postman to verify authentication, product creation, cart updates and order placement.
+ii.	Manual assertions were used to check expected HTTP status codes and response body structure.
+ 
+7.2.2 Integration Testing
+To test whether different modules or services work correctly when combined.
+Application in Project:
+i.	Verified the flow from product selection → add to cart → checkout → order confirmation.
+ii.	Tested backend and database interaction for consistent state updates.
+iii.	Ensured that product ratings submitted by a user update both the Reviews and Products documents.
+7.2.3 UI/UX Testing
+To evaluate the interface design, layout consistency, responsiveness and usability across different mobile devices and screen sizes.
+Application in Project:
+i.	Manually tested on various mobile devices including smartphones and tablets.
+ii.	Verified alignment, component scaling, font readability and color contrast.
+iii.	Checked that all buttons, forms, carousels and modals behave correctly under user interaction.
+7.2.4 Validation Testing
+To ensure that all forms and API inputs meet defined validation rules before data is processed or saved.
+Application in Project:
+i.	Used Flutter's built-in validators to validate inputs in registration, login and product forms.
+ii.	Used Joi to validate API payloads for product creation, checkout requests and user updates.
+
+
+
+
+7.2.5 AI Feature Testing
+To evaluate intelligent features like the chatbot and recommendation engine for accuracy, responsiveness and relevance.
+Application in Project:
+i.	Chatbot testing involved querying product-related questions and checking if the response was contextually correct.
+ii.	Recommendation engine testing checked if suggestions were relevant to browsing behavior, especially for single-brand products.
+7.3 Test Case Format
+Each test case includes the following fields:
+Table 7.1: Test Case Format
+Field	Description
+Test Case ID	Unique identifier
+Module	The feature or component under test
+Description	Summary of what is being tested
+Input Data	The input values to be provided
+Expected Result	The correct system behavior or output
+Actual Result	The output observed during testing
+Status	Pass / Fail
+
+
+7.4 Test Cases
+7.4.1 Test Case for User Registration:
+Table 7.2: Test Case for User Registration
+TC ID	Test Scenario	Input	Expected Result
+TC001	Register with all valid inputs	All fields filled correctly	User registered successfully (201 Created)
+TC002	Missing name	Omit name	400 Error – “Please Enter Name”
+TC003	Invalid email format	email: "notanemail"	400 Error – email format validation fails
+TC004	Missing password	Omit password	400 Error – “Please Enter Password”
+TC005	Missing gender	Omit gender	400 Error – “Please Enter Your Gender”
+TC006	Invalid gender value	gender: "other"	400 Error – must be either "male" or "female"
+TC007	Missing DOB	Omit dob	400 Error – “Please Enter Your Date of Birth”
+TC008	Register with duplicate email	Email already exists in DB	400/409 Error – Duplicate key or custom error
+TC009	Register with future DOB	dob: "2050-01-01"	400 Error – Should reject future date (if validated)
+
+
+
+
+7.4.2 Test Case for User Login
+Table 7.3: Test Case for User Login
+TC ID	Test Scenario	Input	Expected Result
+TC011	Successful login	Valid email and password	200 OK + JWT token returned
+TC012	Missing email	password only	400 Error – “Please Enter Email”
+TC013	Missing password	email only	400 Error – “Please Enter Password”
+TC014	Invalid email format	email: "test"	400 Error – invalid email format
+TC015	Wrong password	Valid email + incorrect password	401 Error – “Invalid Credentials”
+TC016	Non-existing email	email: "notfound@example.com"	404/401 Error – “User not found” or similar
+7.4.3 Test Case for Product 
+Table 7.4: Test Case for Product
+TC ID	Test Scenario	Input Example / Condition	Expected Result
+TC201	Create product with all valid fields	All required + optional fields provided correctly	201 Created – Product successfully added
+TC202	Missing required field: name	Omit name	400 Error – “Product name is required”
+TC203	Name too short	name: "AB"	400 Error – “Product name greater than 3 characters”
+TC204	Name too long	name: "A".repeat(101)	400 Error – “Product name cannot exceed 100 characters”
+TC205	Missing required field: description	Omit description	400 Error – “Product description is required”
+TC206	Missing required field: price	Omit price	400 Error – “Price is required”
+TC207	Negative price	price: -200	400 Error – “Price cannot be negative”
+TC208	Missing category or subCategory	Omit one or both	400 Error – Category and subCategory required
+TC209	Missing images	Omit images array or provide empty array	400 Error – “images[0].url is required”
+TC210	Missing brand	Omit brand	400 Error – “Brand is required”
+TC212	Duplicate SKU	Use an SKU already in the database	400/409 Error – Duplicate key: SKU must be unique
+TC213	Discount price higher than actual price	price: 1000, discountPrice: 1200	400 Error – “Discount price cannot exceed the original price”
+TC214	Discount percentage > 100	discountPercentage: 150	400 Error – “Discount percentage cannot exceed 100”
+TC215	Valid discount settings	price: 1000, discountPrice: 800, discountPercentage: 20	Product created successfully with discount applied
+TC216	Too few tags	tags: []	400 Error – “At least one tag is required”
+TC217	Too many tags	tags: ["a", ..., "k"] (11 total)	400 Error – “Maximum 10 tags allowed”
+TC218	Invalid slug auto-generation	Omit slug but provide valid name	Slug auto-generated from name (e.g., "blue-shirt" from "Blue Shirt")
+TC219	Set isFeatured, isActive manually	isFeatured: true, isActive: false	Product created with these boolean flags
+TC220	Stock set to negative	stock: -1	400 Error – “Stock cannot be negative”
+TC221	Missing aboutTheProduct	Omit or leave it as an empty array	Optional – allowed if not required
+TC222	Large description content	Use 1000+ characters in description	400 Error – “Description cannot exceed 1000 characters”
+TC223	Missing subTitle	Omit subTitle	Optional – allowed if not required
+
+7.4.4 Test Case for Category
+Table 7.5: Test Case for Category
+TC ID	Test Scenario	Input Example / Condition	Expected Result
+TC301	Create parent category with valid data	name: "Men's Fashion", description: "All men's fashion categories"	201 Created – category saved successfully
+TC302	Create subcategory with valid parent ID	name: "Shoes", parent: "<parentId>"	Subcategory created and linked to parent
+TC304	Create with short description	description: "Too short"	400 Error – “Description must be at least 10 char”
+TC305	Create with too long description	description: "A".repeat(1001)	400 Error – “Description cannot exceed 1000 characters”
+TC306	Assign children manually	children: [ObjectId("subCat1"), ObjectId("subCat2")]	Allowed if valid ObjectIds – children array saved
+TC307	Add category with image	image: { url: "https://cloud.com/img.png", publicId: "abc123" }	Image info saved correctly
+TC308	Invalid image structure	image: {} or missing url	May pass unless validated in controller
+TC309	Create duplicate category with same name	Submit same name twice (if slug is disabled)	Allowed unless unique constraint enforced manually
+TC310	Create nested categories recursively	parent → sub → sub-sub	Allowed if parent hierarchy is logically valid
+TC311	Retrieve parent with populated children	GET parent category with .populate('children')	Returns full subcategory data
+TC312	Add category with null parent (top-level)	parent: null	Saved as a main category
+TC313	Add category without description	Omit description (optional field)	Allowed – saved without error
+TC314	Add subcategory and update parent’s children array	Create subcategory, then push ID to parent's children array manually	Linked correctly in both child and parent if logic applied
+
+7.4.5 Test Case for Order
+Table 7.6: Test Case for Order
+TC ID	Test Scenario	Input/Condition	Expected Result
+TC401	Create valid order	All required fields with valid values	201 Created – Order saved successfully
+TC402	Missing shippingInfo	Omit shippingInfo entirely	400 Error – "shippingInfo.address is required"
+TC403	Missing shippingInfo.city	Provide all except city	400 Error – "shippingInfo.city is required"
+TC404	Invalid pinCode (not a number)	pinCode: "abc123"	400 Error – fails number validation
+TC405	Missing user field	Omit user ID	400 Error – "user is required"
+TC406	Missing subTotal	Omit subTotal	400 Error – "subTotal is required"
+TC407	Missing total	Omit total	400 Error – "total is required"
+TC408	Missing orderItems	Empty or undefined orderItems	400 Error – orderItems must contain at least one product
+TC409	Order item missing name	One item in order missing name	400 Error – orderItems.name is required
+TC410	Order item missing _id (product ref)	Omit _id in one of the order items	400 Error – product reference required
+TC411	Order item with negative quantity	quantity: -1	400 Error – fails quantity rule (if additional validation added)
+TC412	Invalid status value	status: "In Transit"	400 Error – not part of defined enum
+TC413	Valid order with default values applied	Omit optional fields like shippingCharges, discount, status	201 Created – default values used
+TC414	Apply a discount and validate total	discount: 100, subTotal: 1000, total: 900	Passes if total calculation is correct
+TC415	Check status progression	Create → update to "Shipped" → update to "Delivered"	Status updated successfully across allowed values
+
+CHAPTER 8
+
+CONCLUSION & RECOMMENDATION
+8.1 Conclusion
+This project presented the design and implementation of the Skin Disease Finder, a comprehensive mobile application for preliminary skin disease diagnosis with a focus on integrating deep learning-based features to improve healthcare accessibility. The platform was developed using Flutter for cross-platform mobile development, TensorFlow Lite for on-device machine learning inference using a trained CNN model, and Firebase for backend services including authentication, database, and cloud storage.
+The system addresses several critical limitations commonly found in traditional dermatological care, such as limited accessibility, time-consuming appointment scheduling, and lack of preliminary screening tools. By combining on-device AI-powered skin lesion classification with comprehensive user support features including disease information, test history tracking, and healthcare provider location services, the platform offers a more accessible, informative, and user-centric approach to preliminary skin cancer screening.
+Key accomplishments of this project include the development of a fully functional mobile healthcare application that enables users to perform preliminary skin disease identification using their smartphones. The system features a deep learning-based classification engine using a trained CNN model that delivers real-time analysis of skin diseases with confidence scores, enhancing user awareness and facilitating early detection. Comprehensive disease information modules are integrated to help users understand their results and make informed decisions. The platform also includes secure test history tracking using Firebase Firestore, allowing users to monitor changes in skin lesions over time. Additionally, healthcare provider location services enable seamless transition from preliminary screening to professional medical consultation. Secure and validated user workflows have been implemented, with Firebase Authentication ensuring proper authorization and data protection for sensitive medical information.
+The testing phase confirmed that the system met both functional and non-functional requirements. User interactions, image processing, AI inference, history management, and mapping features performed reliably under expected conditions. The on-device AI model provided consistent classification results, and the Firebase backend services ensured reliable data storage and retrieval.
+8.2 Recommendations
+While the platform meets its current objectives, there are several areas where enhancements can be made for future development and scalability:
+8.2.1 Enhanced AI Models
+To further improve the effectiveness of the system, training or fine-tuning the CNN model on larger, more diverse datasets can significantly boost classification accuracy. Incorporating transfer learning techniques, data augmentation, and ensemble methods could improve performance across different skin types, lighting conditions, and image qualities. Expanding the training dataset to include more disease categories and regional variations would enhance the model's diagnostic capabilities. Additionally, implementing model versioning and A/B testing capabilities would allow for continuous improvement of the classification accuracy. Integration with federated learning approaches could enable model improvement while maintaining user privacy. These improvements would contribute to a more accurate, reliable, and clinically useful preliminary screening tool.
+8.2.2 Enhanced Mobile Features
+Further enhancements to the Flutter mobile application could include advanced features such as improved image preprocessing algorithms to enhance image quality before classification, integration with device-specific camera features for better image capture, support for multiple languages to increase accessibility, and integration with electronic health records (EHR) systems for seamless data sharing with healthcare providers. Additionally, implementing advanced caching strategies, optimizing app performance for lower-end devices, and adding offline data synchronization capabilities would improve accessibility and user experience across a wider range of mobile devices and network conditions. Integration with wearable devices for continuous skin monitoring could represent a significant advancement in preventive healthcare.
+
+
+
+
+REFERENCES
+
+[1]      Pecan AI, “Lift Sales With AI-Powered E-commerce Product Recommendations”
+          Available: https://www.pecan.ai/blog/ecommerce-personalized-product-recommendations/
+          [Accessed: May. 1, 2025].
+
+[2]      L. Nicolescu and M. T. Tudorache, "Human-Computer Interaction in Customer Service: 
+    The Experience with AI Chatbots A Systematic Literature Review," Electronics, vol. 11,   
+     no. 10, p. 1579, May 2022. Available: https://doi.org/10.3390/electronics11101579%20. 
+    [Accessed: Mag. 1, 2025].
+
+[3]     G. Moss and J. Smith, “The impact of AI on e-commerce,” Journal of AI Research, vol. 8,  
+          no. 3, pp. 34-45, 2024.
+
+[4]     F. Kanwal, N. Bibi, F. U. Jan, M. A. Arslan, A. Ali, and S. Ajmal, "The impact of artificial   
+intelligence on e-commerce," Asian Journal of Research in Computer Science, vol. 17, no.        11, pp. 81-91, 2024. [Online]. Available: https://doi.org/10.9734/ajrcos/2024/v17i11521.
+          [Accessed: May. 5, 2025].
+
+[5]     Chen, W.-H., Hsu, C.-C., Lai, Y.-A., Liu, V., Yeh, M.-Y., & Lin, S.-D. (2020). Attribute-   
+Aware Recommender System Based on Collaborative Filtering: Survey and Classification.         Frontiers in Big Data, 2, 49. 
+Available: https://doi.org/10.3389/fdata.2019.00049
+ [Accessed: May. 16, 2025].
+
+[6]     C. Shivakumar, “Chatbots and Virtual Assistants in E-commerce: Transforming Customer 
+Service and Engagement,” Int. J. Res. Publ. Rev., vol. 5, no. 10, pp. 1521–1528, Oct. 2024,    https://ijrpr.com/uploads/V5ISSUE10/IJRPR33982.pdf.
+
+[7]     D. M. Akdemir and Z. A. Bulut, “Business and Customer-Based Chatbot Activities: The 
+of Customer Satisfaction in Online Purchase Intention and Intention to Reuse Chatbots,”    Information, vol. 19, no. 4, p. 142, 2023.
+
+[8]     M. Madanchian, "The Impact of Artificial Intelligence Marketing on E-Commerce Sales," 
+          Systems, vol. 12, no. 10, pp. 429, Oct. 2024. [Online]. 
+          Available: https://www.mdpi.com/2079-8954/12/10/429
+          [Accessed: May. 16, 2025].
+
+[9]     S. Lee and J. Kim, "Understanding the Usability of Retail Fashion Brand Chatbots," 
+          Journal of Retailing and Consumer Services, vol. 71, pp. 103–112, Jan. 2024. [Online]. 
+          Available: https://www.sciencedirect.com/science/article/abs/pii/S0969698923001248 
+          [Accessed: May. 18, 2025].
+
+
+
+
+[10]    Spiegel Research Center, “How Online Reviews Influence Sales,” Spiegel Digital
+Database Research, 2017. [Online].
+Available: https://spiegel.medill.northwestern.edu/how-online-reviews-influence-sales/
+[Accessed: May 1, 2025].
+
+[11] 	A. Hameed and M. Khan, “AI-Driven Recommendations: A Systematic Review of the State of the Art,” Applied Sciences, vol. 13, no. 9, p. 5531, May 2023. [Online]. 
+Available: https://www.mdpi.com/2076-3417/13/9/5531
+[Accessed: May 2025].
+
+[12]    R. Sharma, “The Adoption of AI-Driven Chatbots in E-Commerce Systems,” International Journal of Management, Economics and Commerce, vol. 9, no. 12, pp. 88–96, Dec. 2024.  
+
+[13]    A. Kumar, “Model View Controller (MVC) Architecture: Benefits and Challenges,” Taazaa, Nov. 11, 2024. [Online]. 
+Available: https://www.taazaa.com/mvc-architecture-benefits-and-challenges/
+[Accessed: May 2025].
+
+[14]    D. V. Shetty and S. J. Chidimar, “Comparative Study of SQL and NoSQL Databases to Evaluate Their Suitability for Big Data Application,” International Journal of Computer Science and Information Technology Research, vol. 4, no. 2, pp. 314–318, 2016.
